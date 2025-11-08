@@ -1,9 +1,9 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useBrands } from "@/hooks/useBrands";
+import { useBrandStore } from "@/store/brandStore";
 import {
   Table,
   TableBody,
@@ -15,28 +15,56 @@ import {
 
 import Link from "next/link";
 import DeleteButton from "@/components/ui/deletebutton";
-
-async function fetchCategories() {
-  const res = await api.get("/Brands");
-  return res.data.value;
-}
+import { Brand } from "@/lib/types/brand";
 
 export default function CategoriesPage() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["Brands"],
-    queryFn: fetchCategories,
-  });
-
-  if (isLoading) return <p className="text-center">Loading Brands...</p>;
+  const { search, currentPage, itemsPerPage, setSearch, setPage } =
+    useBrandStore();
+  const { data: brands, isLoading, error } = useBrands();
+  const filtered = brands?.filter((b) =>
+    b.Name.toLowerCase().includes(search.toLowerCase())
+  );
+  const totalPages =
+    itemsPerPage > 0 ? Math.ceil((filtered?.length ?? 0) / itemsPerPage) : 0;
+  const start = (currentPage - 1) * itemsPerPage;
+  const paginated = filtered?.slice(start, start + itemsPerPage);
+  //if (!brands)return <p className="text-red text-center">Loading Brands Error...</p>;
   return (
     <div>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Brand List </h2>
-        <Link href={"/brands/new"}>
-          <Button>Add Brand</Button>
-        </Link>
       </div>
       <div className="grid gap-4">
+        <div className="flex justify-between items-center">
+          <div className="flex justify-start gap-3 items-center">
+            <input
+              id="searchInput"
+              type="text"
+              placeholder="Search Brand..."
+              //value={search}
+              // onClick={(e) => setSearch(e.target.value)}
+              className="border rounded-md px-3 py-2 w-64"
+            />
+            <Button
+              onClick={() => {
+                const value = (
+                  document.getElementById("searchInput") as HTMLInputElement
+                ).value;
+                setSearch(value);
+              }}
+            >
+              Search
+            </Button>
+            {search && (
+              <Button variant={"outline"} onClick={() => setSearch("")}>
+                Clear search results
+              </Button>
+            )}
+          </div>
+          <Link href="/brands/add">
+            <Button>Add Brand</Button>
+          </Link>
+        </div>
         {!isLoading && !error && (
           <Card>
             <CardContent>
@@ -49,7 +77,7 @@ export default function CategoriesPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {data?.map((b: any) => (
+                  {paginated?.map((b: Brand) => (
                     <TableRow key={b.Id}>
                       <TableCell>{b.Id}</TableCell>
                       <TableCell>{b.Name}</TableCell>
@@ -65,6 +93,30 @@ export default function CategoriesPage() {
                   ))}
                 </TableBody>
               </Table>
+
+              {/* 📄 Pagination */}
+              <div className="flex justify-between items-center mt-4">
+                <span className="text-gray-600">
+                  Page {currentPage} of {totalPages || 1}
+                </span>
+
+                <div className="space-x-2">
+                  <Button
+                    disabled={currentPage === 1}
+                    onClick={() => setPage(currentPage - 1)}
+                    className="text-white disabled:opacity-50"
+                  >
+                    Prev
+                  </Button>
+                  <Button
+                    disabled={currentPage === totalPages}
+                    onClick={() => setPage(currentPage + 1)}
+                    className="text-white disabled:opacity-50"
+                  >
+                    Next
+                  </Button>
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}

@@ -1,43 +1,13 @@
 "use client";
 
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
+
 import { useTranslation } from "react-i18next";
-// --- Fetch summary counts from OData ---
-async function fetchDashboardData() {
-  try {
-    const [products, categories, brands, customers, orders] = await Promise.all(
-      [
-        api
-          .get("/Products/$count", { responseType: "text" })
-          .then((r) => Number(r.data)),
-        api
-          .get("/Categories/$count", { responseType: "text" })
-          .then((r) => Number(r.data)),
-        api
-          .get("/Brands/$count", { responseType: "text" })
-          .then((r) => Number(r.data)),
-        api
-          .get("/Customers/$count", { responseType: "text" })
-          .then((r) => Number(r.data)),
-        api
-          .get("/Orders/$count", { responseType: "text" })
-          .then((r) => Number(r.data)),
-      ]
-    );
-    return { products, categories, brands, customers, orders };
-  } catch (err) {
-    console.error("Fetch failed", err);
-    throw err;
-  }
-}
+import { useDashboardData } from "@/hooks/useDashboardData";
+
 
 export default function DashboardPage() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["dashboard-counts"],
-    queryFn: fetchDashboardData,
-  });
+  const { data, isLoading, error } = useDashboardData()
 
   const { t } = useTranslation("common");
 

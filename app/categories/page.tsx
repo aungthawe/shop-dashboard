@@ -1,7 +1,5 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
-import { api } from "@/lib/axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -15,18 +13,10 @@ import {
 
 import Link from "next/link";
 import DeleteButton from "@/components/ui/deletebutton";
-
-async function fetchCategories() {
-  const res = await api.get("/Categories");
-  return res.data.value;
-}
+import { useCategories } from "@/hooks/useCategories";
 
 export default function CategoriesPage() {
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["Categories"],
-    queryFn: fetchCategories,
-  });
-
+  const { data, isLoading, error } = useCategories();
   if (isLoading) return <p className="text-center">Loading categories...</p>;
   return (
     <div>
@@ -53,7 +43,7 @@ export default function CategoriesPage() {
                     <TableRow key={c.Id}>
                       <TableCell>{c.Id}</TableCell>
                       <TableCell>{c.Name}</TableCell>
-                      <TableCell >
+                      <TableCell>
                         <div className="flex gap-2 justify-end">
                           <Link href={`/categories/${c.Id}/edit`}>
                             <Button>Edit</Button>
