@@ -19,11 +19,8 @@ import { useEffect, useState } from "react";
 export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
-  const { data:products, isLoading, error } = useProducts(page, search);
+  const { data: products, isLoading, error } = useProducts(page, search);
   useEffect(() => {}, [page]);
-
-  if (isLoading)
-    return <p className="text-center mt-10 font-semibold">Loading...</p>;
 
   return (
     <div>
@@ -68,9 +65,11 @@ export default function ProductsPage() {
             <CardContent>
               <div className="h-[600px] overflow-y-auto ">
                 {products?.length == 0 && (
-                  <p className="py-2 px-2 text-center mt-6">No Products Found!</p>
+                  <p className="py-2 px-2 text-center mt-6">
+                    No Products Found!
+                  </p>
                 )}
-                {products?.length as number > 0 && (
+                {(products?.length as number) > 0 && (
                   <Table>
                     <TableHeader>
                       <TableRow>

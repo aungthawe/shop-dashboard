@@ -9,8 +9,8 @@ export interface Product {
   Price: number;
   Stock: number;
   CategoryId: number;
-  Category?: Category | null;
+  Category: Category;
   BrandId: number;
-  Brand?: Brand | null;
+  Brand: Brand;
   OrderItems: OrderItem[];
 }

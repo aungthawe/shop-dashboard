@@ -8,19 +8,19 @@ import {
   patchProduct,
   postProduct,
 } from "@/lib/api/products";
-import { promises } from "dns";
 
 export function useProduct(id: string) {
-  return useQuery({
+  return useQuery<Product | undefined>({
     queryKey: ["product", id],
     queryFn: () => fetchProduct(id),
+
     enabled: !!id,
   });
 }
 
 export function useProducts(page: number, search: string) {
-  return useQuery({
-    queryKey: ["Products",{page,search}],
+  return useQuery<Product[]>({
+    queryKey: ["Products", { page, search }],
     queryFn: () => fetchProducts(page, search),
   });
 }
