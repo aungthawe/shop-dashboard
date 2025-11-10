@@ -2,7 +2,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import DeleteButton from "@/components/ui/deletebutton";
-import { useProducts } from "@/hooks/useProduct";
+import { useProducts, useProductsCount } from "@/hooks/useProduct";
 
 import {
   Table,
@@ -20,6 +20,8 @@ export default function ProductsPage() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const { data: products, isLoading, error } = useProducts(page, search);
+  const { data: totalPages = 0 } = useProductsCount();
+  const currentPage = page;
   useEffect(() => {}, [page]);
 
   return (
@@ -108,7 +110,7 @@ export default function ProductsPage() {
                 )}
               </div>
 
-              <div className="flex gap-2 mt-4 ">
+              {/* <div className="flex gap-2 mt-4 ">
                 {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((p) => (
                   <Button
                     key={p}
@@ -117,6 +119,22 @@ export default function ProductsPage() {
                   >
                     {p}
                   </Button>
+                ))}
+              </div> */}
+
+              <div className="flex justify-center mt-4 gap-2">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i + 1)}
+                    className={`px-3 py-1 border border-2 rounded-full ${
+                      currentPage === i + 1
+                        ? "bg-primary text-white transition-color duration-500"
+                        : "bg-secondary"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
                 ))}
               </div>
             </CardContent>

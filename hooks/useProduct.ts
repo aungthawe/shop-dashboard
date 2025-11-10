@@ -7,6 +7,7 @@ import {
   fetchProduct,
   patchProduct,
   postProduct,
+  fetchProductsCount,
 } from "@/lib/api/products";
 
 export function useProduct(id: string) {
@@ -22,6 +23,12 @@ export function useProducts(page: number, search: string) {
   return useQuery<Product[]>({
     queryKey: ["Products", { page, search }],
     queryFn: () => fetchProducts(page, search),
+  });
+}
+export function useProductsCount() {
+  return useQuery({
+    queryKey: ["productcount"],
+    queryFn: () => fetchProductsCount(),
   });
 }
 

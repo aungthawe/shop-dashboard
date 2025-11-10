@@ -17,7 +17,7 @@ import Link from "next/link";
 import DeleteButton from "@/components/ui/deletebutton";
 import { Brand } from "@/lib/types/brand";
 
-export default function CategoriesPage() {
+export default function BrandsPage() {
   const { search, currentPage, itemsPerPage, setSearch, setPage } =
     useBrandStore();
   const { data: brands, isLoading, error } = useBrands();
@@ -68,54 +68,52 @@ export default function CategoriesPage() {
         {!isLoading && !error && (
           <Card>
             <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>ID</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {paginated?.map((b: Brand) => (
-                    <TableRow key={b.Id}>
-                      <TableCell>{b.Id}</TableCell>
-                      <TableCell>{b.Name}</TableCell>
-                      <TableCell>
-                        <div className="flex gap-2 justify-end">
-                          <Link href={`/brands/${b.Id}/edit`}>
-                            <Button>Edit</Button>
-                          </Link>
-                          <DeleteButton id={b.Id} entity={"Brands"} />
-                        </div>
-                      </TableCell>
+              <div className="h-[600px] overflow-y-auto ">
+                {brands?.length == 0 && (
+                  <p className="py-2 px-2 text-center mt-6">
+                    No Brand Found!
+                  </p>
+                )}
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>ID</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-
+                  </TableHeader>
+                  <TableBody>
+                    {paginated?.map((b: Brand) => (
+                      <TableRow key={b.Id}>
+                        <TableCell>{b.Id}</TableCell>
+                        <TableCell>{b.Name}</TableCell>
+                        <TableCell>
+                          <div className="flex gap-2 justify-end">
+                            <Link href={`/brands/${b.Id}/edit`}>
+                              <Button>Edit</Button>
+                            </Link>
+                            <DeleteButton id={b.Id} entity={"Brands"} />
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
               {/* 📄 Pagination */}
-              <div className="flex justify-between items-center mt-4">
-                <span className="text-gray-600">
-                  Page {currentPage} of {totalPages || 1}
-                </span>
 
-                <div className="space-x-2">
-                  <Button
-                    disabled={currentPage === 1}
-                    onClick={() => setPage(currentPage - 1)}
-                    className="text-white disabled:opacity-50"
+              <div className="flex justify-center mt-4 gap-2">
+                {Array.from({ length: totalPages }, (_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i + 1)}
+                    className={`px-3 py-1 border border-2 rounded-full ${
+                      currentPage === i + 1 ? "bg-primary text-white transition-color duration-500" : "bg-secondary"
+                    }`}
                   >
-                    Prev
-                  </Button>
-                  <Button
-                    disabled={currentPage === totalPages}
-                    onClick={() => setPage(currentPage + 1)}
-                    className="text-white disabled:opacity-50"
-                  >
-                    Next
-                  </Button>
-                </div>
+                    {i + 1}
+                  </button>
+                ))}
               </div>
             </CardContent>
           </Card>

@@ -9,12 +9,22 @@ export const fetchProducts = async (
   const skip = (page - 1) * 10;
   const filter = search ? `$filter=contains(Name,'${search}')` : "";
   const res = await api.get(
-    `/Products?$top=${pageSize}&$skip=${skip}&${filter}$expand=Category,Brand`
+    `/Products?$top=${pageSize}&$skip=${skip}&${filter}&$expand=Category,Brand`
   );
   return res.data.value ?? [];
 };
 
-export const fetchProduct = async (id: string): Promise<Product | undefined> => {
+export const fetchProductsCount = async (): Promise<number> => {
+  const pageSize = 10;
+  const res = await api.get(`/Products/$count`);
+  console.log("Product count:", res.data);
+
+  return Math.ceil(res.data / pageSize);
+};
+
+export const fetchProduct = async (
+  id: string
+): Promise<Product | undefined> => {
   const res = await api.get(
     `/Products?$filter=Id eq ${id}&$expand=Category,Brand`
   );
